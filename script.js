@@ -16,3 +16,10 @@ app.listen(port, () => {
 app.get("/", (req, res) => {
     res.render("index.ejs");
 })
+
+app.post("/submit", (req, res) => {
+    console.log(req.body);
+    res.render("submit.ejs", {
+        name: req.body["student-name"],
+    })
+})
