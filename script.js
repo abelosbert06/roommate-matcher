@@ -1,6 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
 import fs from "fs";
+require('dotenv').config();
+
+const dbUsername = credentials.env.DB_USERNAME;
+const dbPassword = credentials.env.DB_PASSWORD;
 
 const app = express();
 const port = 3000;
@@ -49,4 +53,23 @@ app.post("/submit", (req, res) => {
     })
 
     
+})
+
+var adminAcc = {
+    uid1: {
+        username: "abel",
+        password: "osbert"
+    }
+};
+
+app.get("/admin", (req, res) => {
+    res.render("login.ejs");
+    app.post("/admin/login", (req, res) => {
+
+        if (dbUsername === req.body["username"] && dbPassword === req.body["password"]) {
+            res.sendStatus(200);
+        } else {
+            res.render("login.ejs", {authFail: true});
+        }
+    })
 })
