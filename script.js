@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import fs from "fs";
 import 'dotenv/config';
-
+import download from 'download-file';
 
 const dbUsername = "admin";
 const dbPassword = "admin@123!";
@@ -68,8 +68,21 @@ app.get("/admin", (req, res) => {
     app.post("/admin/login", (req, res) => {
         console.log(req.body["password"] + " " + dbPassword);
         if ("abel" == req.body["username"] && "abel" == req.body["password"]) {
-            res.sendStatus(200);
+            res.render("result.ejs");
             compareStudents();
+            const filePathstu = "roommate-matcher\compatibility_scores.json";
+            const options = {
+                directory: "./downloads",
+                filename: "compatibility_scores.json"
+            };
+
+            res.download('roommate-matcher/compatibility_scores.json', 'compatibility_scores.json', (err) => {
+                if (err) {
+                    console.log("Error downloading the file:", err);
+                } else {
+                    console.log("File downloaded successfully!");
+                }
+            });
         } else {
             res.render("login.ejs", {authFail: true});
         }
