@@ -86,21 +86,42 @@ function compareStudents() {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const students = JSON.parse(fileContent);
 
+    const maxIncompatibilityScore = 4 * 17; // Maximum possible incompatibility score
+    const compatibilityScores = [];
+
     for (let i = 0; i < students.length; i++) {
         for (let j = i + 1; j < students.length; j++) {
             const student1 = students[i];
             const student2 = students[j];
             let incompatibilityScore = 0;
-            let compatabilityScore = 0;
+
             for (let k = 1; k <= 17; k++) {
                 const questionKey = `q${k}`;
                 const response1 = parseInt(student1[questionKey], 10);
                 const response2 = parseInt(student2[questionKey], 10);
                 incompatibilityScore += Math.abs(response1 - response2);
-                compatabilityScore = 68 - incompatibilityScore;
             }
 
-            console.log(`Compatability between ${student1["student-name"]} and ${student2["student-name"]}: ${compatabilityScore}`);
+            const compatibilityScore = maxIncompatibilityScore - incompatibilityScore;
+            compatibilityScores.push({
+                student1: student1["student-name"],
+                student2: student2["student-name"],
+                score: compatibilityScore
+            });
         }
     }
+
+    // Sort the compatibility scores in descending order
+    compatibilityScores.sort((a, b) => b.score - a.score);
+
+    // Display the highest scores
+    console.log("Top compatibility scores:");
+    compatibilityScores.forEach(pair => {
+        console.log(`Compatibility between ${pair.student1} and ${pair.student2}: ${pair.score}`);
+    });
+
+    // Write the highest scores to a JSON file
+    const outputFilePath = 'compatibility_scores.json';
+    fs.writeFileSync(outputFilePath, JSON.stringify(compatibilityScores, null, 2));
 }
+
