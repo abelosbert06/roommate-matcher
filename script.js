@@ -68,23 +68,19 @@ app.get("/admin", (req, res) => {
     app.post("/admin/login", (req, res) => {
         console.log(req.body["password"] + " " + dbPassword);
         if ("abel" == req.body["username"] && "abel" == req.body["password"]) {
-            res.render("result.ejs");
             compareStudents();
-            const filePathstu = "roommate-matcher\compatibility_scores.json";
-            const options = {
-                directory: "./downloads",
-                filename: "compatibility_scores.json"
-            };
-
-            res.download('roommate-matcher/compatibility_scores.json', 'compatibility_scores.json', (err) => {
+            const filePathstu = "compatibility_scores.json";
+            res.download(filePathstu, 'compatibility_scores.json', (err) => {
                 if (err) {
                     console.log("Error downloading the file:", err);
+                    return res.render("result.ejs", { downloadError: true });
                 } else {
                     console.log("File downloaded successfully!");
+                    return res.render("result.ejs", { downloadError: false });
                 }
             });
         } else {
-            res.render("login.ejs", {authFail: true});
+            return res.render("login.ejs", {authFail: true});
         }
     })
 })

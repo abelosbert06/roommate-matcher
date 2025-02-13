@@ -2,6 +2,51 @@
   {
     "student1": "abel",
     "student2": "john",
-    "score": 45
+    "score": 62
+  },
+  {
+    "student1": "mary",
+    "student2": "emma",
+    "score": 59
+  },
+  {
+    "student1": "abel",
+    "student2": "emma",
+    "score": 58
+  },
+  {
+    "student1": "john",
+    "student2": "mary",
+    "score": 57
+  },
+  {
+    "student1": "john",
+    "student2": "lucas",
+    "score": 56
+  },
+  {
+    "student1": "lucas",
+    "student2": "emma",
+    "score": 56
+  },
+  {
+    "student1": "abel",
+    "student2": "mary",
+    "score": 54
+  },
+  {
+    "student1": "abel",
+    "student2": "lucas",
+    "score": 51
+  },
+  {
+    "student1": "john",
+    "student2": "emma",
+    "score": 49
+  },
+  {
+    "student1": "mary",
+    "student2": "lucas",
+    "score": 44
   }
 ]
