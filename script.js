@@ -1,10 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
 import fs from "fs";
-require('dotenv').config();
+import 'dotenv/config';
 
-const dbUsername = credentials.env.DB_USERNAME;
-const dbPassword = credentials.env.DB_PASSWORD;
+
+const dbUsername = "admin";
+const dbPassword = "admin@123!";
 
 const app = express();
 const port = 3000;
@@ -65,11 +66,41 @@ var adminAcc = {
 app.get("/admin", (req, res) => {
     res.render("login.ejs");
     app.post("/admin/login", (req, res) => {
-
-        if (dbUsername === req.body["username"] && dbPassword === req.body["password"]) {
+        console.log(req.body["password"] + " " + dbPassword);
+        if ("abel" == req.body["username"] && "abel" == req.body["password"]) {
             res.sendStatus(200);
+            compareStudents();
         } else {
             res.render("login.ejs", {authFail: true});
         }
     })
 })
+
+function compareStudents() {
+    const filePath = 'data.json';
+    if (!fs.existsSync(filePath)) {
+        console.log("No data found.");
+        return;
+    }
+
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const students = JSON.parse(fileContent);
+
+    for (let i = 0; i < students.length; i++) {
+        for (let j = i + 1; j < students.length; j++) {
+            const student1 = students[i];
+            const student2 = students[j];
+            let incompatibilityScore = 0;
+            let compatabilityScore = 0;
+            for (let k = 1; k <= 17; k++) {
+                const questionKey = `q${k}`;
+                const response1 = parseInt(student1[questionKey], 10);
+                const response2 = parseInt(student2[questionKey], 10);
+                incompatibilityScore += Math.abs(response1 - response2);
+                compatabilityScore = 68 - incompatibilityScore;
+            }
+
+            console.log(`Compatability between ${student1["student-name"]} and ${student2["student-name"]}: ${compatabilityScore}`);
+        }
+    }
+}
