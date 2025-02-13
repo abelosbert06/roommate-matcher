@@ -99,8 +99,17 @@ function compareStudents() {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const students = JSON.parse(fileContent);
 
-    const maxIncompatibilityScore = 4 * 17; // Maximum possible incompatibility score
+    // Placeholder weights for each question
+    const weights = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let totalWeights = 0;
+    for (let i = 0; i < weights.length; i++) {
+        totalWeights += weights[i];
+    }
+
+    const maxIncompatibilityScore = 4 * 17 + totalWeights; // Maximum possible incompatibility score
     const compatibilityScores = [];
+
+ 
 
     for (let i = 0; i < students.length; i++) {
         for (let j = i + 1; j < students.length; j++) {
@@ -112,7 +121,8 @@ function compareStudents() {
                 const questionKey = `q${k}`;
                 const response1 = parseInt(student1[questionKey], 10);
                 const response2 = parseInt(student2[questionKey], 10);
-                incompatibilityScore += Math.abs(response1 - response2);
+                const weight = weights[k - 1];
+                incompatibilityScore += weight * Math.abs(response1 - response2);
             }
 
             const compatibilityScore = maxIncompatibilityScore - incompatibilityScore;

@@ -7,15 +7,42 @@
     <title>Login</title>
 </head>
 <body>
+    <button id="downloadButton">Download Data</button>
+
+<script>
+  const downloadButton = document.getElementById('downloadButton');
+
+  downloadButton.addEventListener('click', () => {
+    fetch('/generate_data') // URL of your server-side script
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob(); // Get the response as a Blob
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.txt'; // Suggested filename
+        document.body.appendChild(a); // Append to the DOM (hidden)
+        a.click(); // Simulate a click
+        window.URL.revokeObjectURL(url); // Clean up the URL
+        document.body.removeChild(a); // Remove the element
+      })
+      .catch(error => {
+        console.error('Error downloading file:', error);
+        // Handle the error (e.g., display a message to the user)
+      });
+  });
+</script>
     <center>
         <center>
                 
         </center>
         <div class="container">
             <h1>Download your result file.</h1>
-            <a href="roomamate-match\roommate-matcher\compatibility_scores.json" download="compatibility_scores.json">
-                <button>Download</button>
-            </a>
+            <button id="downloadButton">Download Data</button>
         </div>
         <div class="footer">
             <footer>Copyright CSE department 2025</footer>
