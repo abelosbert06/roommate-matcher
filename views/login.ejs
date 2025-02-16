@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel = "stylesheet" href = "styles/login.css">
+    <link rel="stylesheet" href="/styles/login.css">
     <title>Login</title>
 </head>
 <body>
     <center>
-        <center>
-                
-        </center>
         <div class="container">
             <h1>Admin Login</h1>
             <form action="/admin/login" method="POST">
-
                 <div class="field">
                     <label for="username">Username: </label><br>
                     <input class="textbox" type="text" name="username" placeholder="Username"><br>
@@ -23,21 +19,15 @@
                     <label for="password">Password: </label><br>
                     <input class="textbox" type="password" name="password" placeholder="Password"><br>
                 </div>    
-                
-                <button class="feild-button" type="submit">Login</button>
-           
+                <button class="field-button" type="submit">Login</button>
             </form>
-        
-            <% if(locals.authFail) { %>
-                <h2>Incorrect login details! Please try again.</h2>
-            <%}%>    
+            <% if (locals.authFail) { %>
+                <h2 class="error">Incorrect login details! Please try again.</h2>
+            <% } %>    
         </div>
         <div class="footer">
             <footer>Copyright CSE department 2025</footer>
         </div>
     </center>
-    
-
-
 </body>
 </html>

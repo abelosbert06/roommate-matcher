@@ -1,21 +1,23 @@
 import express from "express";
+import dotenv from 'dotenv';
+dotenv.config({path: './process.env'});
 import bodyParser from "body-parser";
 import fs from "fs";
-import 'dotenv/config';
-import download from 'download-file';
+import bcrypt from "bcrypt";
 
-const dbUsername = "admin";
-const dbPassword = "admin@123!";
+const saltRounds = 10;
+const dbUsername = process.env.DB_USERNAME;
+const dbPassword = process.env.DB_PASSWORD;
 
 const app = express();
 const port = 3000;
 
-
 app.use(express.static("public"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
-
+app.set('view engine', 'ejs');
+app.set('views', './views');
 
 app.listen(port, () => {
     console.log(`currently listening to the port ${port}`);
@@ -25,10 +27,7 @@ app.get("/", (req, res) => {
     res.render("index.ejs");
 })
 
-
 app.post("/submit", (req, res) => {
-
-
     const filePath = 'data.json';
 
     // Read existing data
@@ -46,14 +45,10 @@ app.post("/submit", (req, res) => {
     // Write updated data back to file
     fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
 
-
-
     console.log(req.body);
     res.render("submit.ejs", {
         name: req.body["student-name"],
     })
-
-    
 })
 
 var adminAcc = {
@@ -63,27 +58,41 @@ var adminAcc = {
     }
 };
 
-app.get("/admin", (req, res) => {
-    res.render("login.ejs");
-    app.post("/admin/login", (req, res) => {
-        console.log(req.body["password"] + " " + dbPassword);
-        if ("abel" == req.body["username"] && "abel" == req.body["password"]) {
-            compareStudents();
-            const filePathstu = "compatibility_scores.json";
-            res.download(filePathstu, 'compatibility_scores.json', (err) => {
-                if (err) {
-                    console.log("Error downloading the file:", err);
-                    return res.render("result.ejs", { downloadError: true });
-                } else {
-                    console.log("File downloaded successfully!");
-                    return res.render("result.ejs", { downloadError: false });
-                }
-            });
-        } else {
-            return res.render("login.ejs", {authFail: true});
-        }
-    })
-})
+// Hash the username and password
+bcrypt.hash(dbUsername, saltRounds, (err, hashedUsername) => {
+    if (err) throw err;
+    bcrypt.hash(dbPassword, saltRounds, (err, hashedPassword) => {
+        if (err) throw err;
+
+        app.get("/admin", (req, res) => {
+            res.render("login.ejs");
+            app.post("/admin/login", (req, res) => {
+                console.log(req.body["password"] + " " + hashedPassword);
+                bcrypt.compare(req.body["username"], hashedUsername, (err, usernameMatch) => {
+                    if (err) throw err;
+                    bcrypt.compare(req.body["password"], hashedPassword, (err, passwordMatch) => {
+                        if (err) throw err;
+                        if (usernameMatch && passwordMatch) {
+                            compareStudents();
+                            const filePathstu = "compatibility_scores.json";
+                            res.download(filePathstu, 'compatibility_scores.json', (err) => {
+                                if (err) {
+                                    console.log("Error downloading the file:", err);
+                                    return res.render("result.ejs", { downloadError: true });
+                                } else {
+                                    console.log("File downloaded successfully!");
+                                    return res.render("result.ejs", { downloadError: false });
+                                }
+                            });
+                        } else {
+                            return res.render("login.ejs", {authFail: true});
+                        }
+                    });
+                });
+            })
+        })
+    });
+});
 
 function compareStudents() {
     const filePath = 'data.json';
@@ -104,8 +113,6 @@ function compareStudents() {
 
     const maxIncompatibilityScore = 4 * 17 + totalWeights; // Maximum possible incompatibility score
     const compatibilityScores = [];
-
- 
 
     for (let i = 0; i < students.length; i++) {
         for (let j = i + 1; j < students.length; j++) {
